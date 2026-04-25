@@ -1,0 +1,538 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+    <title>🐾 Meu Pet · Amor em Pixel</title>
+    <style>
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+        }
+
+        body {
+            font-family: 'Segoe UI', 'Quicksand', system-ui, sans-serif;
+            text-align: center;
+            background: linear-gradient(145deg, #1e2b3a 0%, #2c3e50 100%);
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #f0e9e1;
+            margin: 0;
+            padding: 16px;
+        }
+
+        #game-screen {
+            background: rgba(52, 73, 94, 0.9);
+            backdrop-filter: blur(8px);
+            padding: 24px 20px;
+            border-radius: 40px;
+            max-width: 480px;
+            width: 100%;
+            margin: auto;
+            box-shadow: 0 20px 30px rgba(0, 0, 0, 0.5), inset 0 1px 4px rgba(255, 255, 255, 0.1);
+            border: 1px solid #5d7a9a;
+            transition: all 0.3s ease;
+        }
+
+        h2 {
+            font-weight: 600;
+            letter-spacing: 1px;
+            text-shadow: 0 4px 8px #1a252f;
+            margin-bottom: 16px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .pet-portrait {
+            background: #f7f3eb;
+            border-radius: 60px 60px 30px 30px;
+            padding: 20px 20px 10px;
+            margin-bottom: 15px;
+            box-shadow: inset 0 0 0 3px #f1c40f, 0 10px 0 #7f8c8d;
+        }
+
+        #pet-display {
+            max-width: 220px;
+            max-height: 220px;
+            margin: 0 auto;
+            display: block;
+            border-radius: 30px;
+            background: white;
+            box-shadow: 0 6px 0 #b0c4de;
+            border: 3px solid #34495e;
+            object-fit: contain;
+            width: 100%;
+            height: auto;
+            aspect-ratio: 1 / 1;
+            transition: opacity 0.5s ease-in-out;
+        }
+
+        #pet-name-display {
+            font-size: 24px;
+            font-weight: bold;
+            color: #2c3e50;
+            margin-top: 10px;
+            background: #f1c40f;
+            display: inline-block;
+            padding: 6px 24px;
+            border-radius: 40px;
+            box-shadow: inset 0 -2px 0 #b7950b;
+        }
+
+        .stats-panel {
+            background: #1e2b3a;
+            border-radius: 50px;
+            padding: 18px 16px;
+            margin: 18px 0;
+            box-shadow: inset 0 2px 5px #0f1a24, 0 6px 0 #0f1a24;
+        }
+
+        .stat-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            margin-bottom: 14px;
+        }
+
+        .stat-label {
+            width: 70px;
+            font-weight: bold;
+            text-align: left;
+            color: #ecf0f1;
+            text-shadow: 0 2px 3px black;
+        }
+
+        .bar-container {
+            flex: 1;
+            background-color: #2c3e50;
+            border-radius: 30px;
+            height: 22px;
+            overflow: hidden;
+            box-shadow: inset 0 2px 5px #0f1a24;
+            border: 1px solid #5d7a9a;
+        }
+
+        .bar {
+            height: 100%;
+            width: 100%;
+            transition: width 0.25s ease;
+            border-radius: 30px;
+            box-shadow: 0 0 6px currentColor;
+        }
+
+        #fome-bar {
+            background: linear-gradient(90deg, #e74c3c, #ff6b6b);
+        }
+
+        #higiene-bar {
+            background: linear-gradient(90deg, #3498db, #74b9ff);
+        }
+
+        #energia-bar {
+            background: linear-gradient(90deg, #f1c40f, #ffe066);
+        }
+
+        #diversao-bar {
+            background: linear-gradient(90deg, #9b59b6, #d4a5ff);
+        }
+
+        .action-buttons {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            margin: 20px 0 10px;
+        }
+
+        button {
+            background: #1abc9c;
+            color: white;
+            border: none;
+            padding: 12px 20px;
+            margin: 6px 4px;
+            border-radius: 60px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            box-shadow: 0 8px 0 #0e6b5c, 0 4px 8px rgba(0, 0, 0, 0.3);
+            transition: all 0.08s ease-in;
+            border: 1px solid #2ecc71;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            letter-spacing: 0.3px;
+        }
+
+        button:active {
+            transform: translateY(6px);
+            box-shadow: 0 2px 0 #0e6b5c, 0 4px 8px rgba(0, 0, 0, 0.2);
+        }
+
+        button:hover {
+            background: #16a085;
+            filter: brightness(1.1);
+        }
+
+        .danger-btn {
+            background: #e67e22;
+            box-shadow: 0 8px 0 #b85e0a, 0 4px 8px rgba(0, 0, 0, 0.3);
+            border-color: #f39c12;
+        }
+
+        .danger-btn:hover {
+            background: #d35400;
+        }
+
+        #naoCliqueBtn {
+            background: #c0392b;
+            box-shadow: 0 8px 0 #7b241c, 0 4px 10px black;
+            font-size: 18px;
+            padding: 14px 30px;
+            border-color: #e74c3c;
+            animation: pulseWarning 1.5s infinite;
+        }
+
+        @keyframes pulseWarning {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.02);
+                background: #e74c3c;
+                box-shadow: 0 8px 0 #7b241c, 0 0 15px #ff9580;
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .secret-button-wrapper {
+            margin: 15px 0 5px;
+        }
+
+        /* Chuva de corações */
+        #heart-rain-container {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 999;
+            overflow: hidden;
+        }
+
+        .heart {
+            position: absolute;
+            color: #ff4d6d;
+            font-size: 24px;
+            user-select: none;
+            pointer-events: none;
+            animation: fall linear forwards;
+            opacity: 0.9;
+            filter: drop-shadow(0 0 5px #ffb3c1);
+        }
+
+        @keyframes fall {
+            0% {
+                transform: translateY(-10vh) rotate(0deg);
+                opacity: 1;
+            }
+            100% {
+                transform: translateY(110vh) rotate(360deg);
+                opacity: 0.2;
+            }
+        }
+
+        /* Modal cartinha */
+        .love-letter-modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            z-index: 1001;
+            pointer-events: none;
+            opacity: 0;
+            transition: 0.3s;
+        }
+
+        .love-letter-modal.show {
+            pointer-events: auto;
+            opacity: 1;
+        }
+
+        .letter-card {
+            background: #ffe6f0;
+            width: 320px;
+            max-width: 90vw;
+            border-radius: 60px 60px 40px 40px;
+            box-shadow: 0 30px 30px rgba(0, 0, 0, 0.4), 0 0 0 6px #ffb6c1, 0 0 0 12px #ff85a2;
+            padding: 24px 16px 30px;
+            text-align: center;
+            transform: scale(0.9);
+            transition: transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+        }
+
+        .love-letter-modal.show .letter-card {
+            transform: scale(1);
+        }
+
+        .letter-content {
+            background: #fff9f9;
+            border-radius: 30px;
+            padding: 20px 14px;
+            box-shadow: inset 0 0 0 3px #ffd9e4, 0 8px 0 #b38b9b;
+            margin: 15px 0;
+            color: #5e2e3e;
+            font-size: 16px;
+            line-height: 1.6;
+            min-height: 160px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            word-break: break-word;
+        }
+
+        .letter-message {
+            font-style: italic;
+            text-shadow: 0 1px 1px white;
+        }
+
+        .btn-letter {
+            background: #ff85a2;
+            box-shadow: 0 6px 0 #b34e67;
+            margin-top: 8px;
+            font-size: 18px;
+            padding: 12px 28px;
+            border-color: #ffb6c1;
+        }
+
+        .btn-letter.close-btn {
+            background: #bdc3c7;
+            box-shadow: 0 6px 0 #7f8c8d;
+            margin-left: 8px;
+        }
+
+        .footer-actions {
+            margin-top: 18px;
+            display: flex;
+            justify-content: center;
+            gap: 12px;
+        }
+
+        @media (max-width: 400px) {
+            button {
+                padding: 10px 14px;
+                font-size: 14px;
+            }
+            .stat-label {
+                width: 55px;
+                font-size: 14px;
+            }
+        }
+    </style>
+</head>
+<body>
+
+    <div id="game-screen">
+        <h2>🌈 Cuidando de <span id="pet-name-display">Tutuzinha</span></h2>
+
+        <div class="pet-portrait">
+            <img id="pet-display" src="https://i.ibb.co/ZzxXJLRZ/20240512-180754-2.jpg" alt="Seu Pet">
+        </div>
+
+        <div class="stats-panel">
+            <div class="stat-row"><span class="stat-label">🍖 Fome</span><div class="bar-container"><div id="fome-bar" class="bar" style="width:100%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">🛁 Higiene</span><div class="bar-container"><div id="higiene-bar" class="bar" style="width:100%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">⚡ Energia</span><div class="bar-container"><div id="energia-bar" class="bar" style="width:100%"></div></div></div>
+            <div class="stat-row"><span class="stat-label">🎾 Diversão</span><div class="bar-container"><div id="diversao-bar" class="bar" style="width:100%"></div></div></div>
+        </div>
+
+        <div class="action-buttons">
+            <button onclick="alimentar()">🍕 Alimentar</button>
+            <button onclick="darBanho()">🛁 Banho</button>
+            <button onclick="dormir()">💤 Dormir</button>
+            <button onclick="brincar()">⚽ Brincar</button>
+        </div>
+
+        <div class="secret-button-wrapper">
+            <button id="naoCliqueBtn" class="danger-btn" onclick="ativarSurpresa()">🙈 NÃO CLIQUE AQUI 🙉</button>
+        </div>
+
+        <div class="footer-actions">
+            <button onclick="reiniciarJogo()">🔄 Reiniciar Status</button>
+        </div>
+    </div>
+
+    <!-- Container chuva de corações -->
+    <div id="heart-rain-container"></div>
+
+    <!-- Modal cartinha -->
+    <div id="loveLetterModal" class="love-letter-modal">
+        <div class="letter-card">
+            <div style="font-size:64px;">❤️‍🔥</div>
+            <h3 style="color:#a33354;">Uma cartinha pra você</h3>
+            <div id="letterInner" class="letter-content">
+                <span class="letter-message">📩 Clique para abrir...</span>
+            </div>
+            <div>
+                <button class="btn-letter" onclick="abrirCartinha()">💌 Abrir cartinha</button>
+                <button class="btn-letter close-btn" onclick="fecharCarta()">🌸 Fechar</button>
+            </div>
+        </div>
+    </div>
+
+    <script>
+        (function() {
+            "use strict";
+
+            // ---------- IMAGENS FIXAS (ALTERNAM A CADA 5 SEGUNDOS) ----------
+            const imagens = [
+                "https://i.ibb.co/ZzxXJLRZ/20240512-180754-2.jpg",
+                "https://i.ibb.co/YBPK8YjJ/20240330-134630-2.jpg",
+                "https://i.ibb.co/ymsnn7yw/20240303-214610-2.jpg",
+                "https://i.ibb.co/23X4yFsM/20240302-171603-2.jpg"
+            ];
+            let indiceImagemAtual = 0;
+            const petDisplay = document.getElementById('pet-display');
+
+            function alternarImagem() {
+                indiceImagemAtual = (indiceImagemAtual + 1) % imagens.length;
+                petDisplay.style.opacity = '0';
+                setTimeout(() => {
+                    petDisplay.src = imagens[indiceImagemAtual];
+                    petDisplay.style.opacity = '1';
+                }, 250);
+            }
+
+            setInterval(alternarImagem, 5000);
+
+            // ---------- ESTADO DO JOGO ----------
+            let status = {
+                fome: 100,
+                higiene: 100,
+                energia: 100,
+                diversao: 100
+            };
+            let loopJogo = null;
+            const petName = "Tutuzinha";
+
+            const fomeBar = document.getElementById('fome-bar');
+            const higieneBar = document.getElementById('higiene-bar');
+            const energiaBar = document.getElementById('energia-bar');
+            const diversaoBar = document.getElementById('diversao-bar');
+
+            function atualizarBarras() {
+                fomeBar.style.width = status.fome + '%';
+                higieneBar.style.width = status.higiene + '%';
+                energiaBar.style.width = status.energia + '%';
+                diversaoBar.style.width = status.diversao + '%';
+            }
+
+            function verificarFimDeJogo() {
+                if (status.fome <= 0 || status.higiene <= 0 || status.energia <= 0 || status.diversao <= 0) {
+                    alert(`😢 ${petName} ficou muito triste e fugiu... Cuide melhor!`);
+                    reiniciarJogo();
+                }
+            }
+
+            function diminuirStatus() {
+                status.fome = Math.max(0, status.fome - 3);
+                status.higiene = Math.max(0, status.higiene - 2);
+                status.energia = Math.max(0, status.energia - 2);
+                status.diversao = Math.max(0, status.diversao - 4);
+                atualizarBarras();
+                verificarFimDeJogo();
+            }
+
+            window.alimentar = function() {
+                status.fome = Math.min(100, status.fome + 25);
+                atualizarBarras();
+            };
+            window.darBanho = function() {
+                status.higiene = Math.min(100, status.higiene + 35);
+                atualizarBarras();
+            };
+            window.dormir = function() {
+                status.energia = Math.min(100, status.energia + 45);
+                status.fome = Math.max(0, status.fome - 12);
+                atualizarBarras();
+            };
+            window.brincar = function() {
+                status.diversao = Math.min(100, status.diversao + 35);
+                status.energia = Math.max(0, status.energia - 10);
+                atualizarBarras();
+            };
+
+            window.reiniciarJogo = function() {
+                status = {
+                    fome: 100,
+                    higiene: 100,
+                    energia: 100,
+                    diversao: 100
+                };
+                atualizarBarras();
+                if (loopJogo) clearInterval(loopJogo);
+                loopJogo = setInterval(diminuirStatus, 2200);
+            };
+
+            // ---------- SURPRESA ROMÂNTICA ----------
+            const heartContainer = document.getElementById('heart-rain-container');
+            const modal = document.getElementById('loveLetterModal');
+            const letterInner = document.getElementById('letterInner');
+            let heartInterval = null;
+
+            const mensagemDeAmor = `“você é quem faz meu dia nascer,<br>sua luz me faz crescer,<br>a minha vida não tem sentido sem você.<br>Para sempre, seremos eu e você.<br>Eu te amo minha princesa.”`;
+
+            function criarCoracao() {
+                const heart = document.createElement('div');
+                heart.className = 'heart';
+                heart.innerHTML = '❤️';
+                heart.style.left = Math.random() * 100 + '%';
+                heart.style.animationDuration = (Math.random() * 3 + 3) + 's';
+                heart.style.fontSize = (Math.random() * 30 + 20) + 'px';
+                heartContainer.appendChild(heart);
+                setTimeout(() => heart.remove(), 6000);
+            }
+
+            function iniciarChuva() {
+                if (heartInterval) clearInterval(heartInterval);
+                heartInterval = setInterval(criarCoracao, 200);
+                setTimeout(() => {
+                    if (heartInterval) clearInterval(heartInterval);
+                }, 5000);
+            }
+
+            window.ativarSurpresa = function() {
+                iniciarChuva();
+                letterInner.innerHTML = '<span class="letter-message">📩 Clique para abrir...</span>';
+                modal.classList.add('show');
+            };
+
+            window.abrirCartinha = function() {
+                letterInner.innerHTML = `<span class="letter-message">${mensagemDeAmor}</span>`;
+            };
+
+            window.fecharCarta = function() {
+                modal.classList.remove('show');
+                if (heartInterval) clearInterval(heartInterval);
+                heartContainer.innerHTML = '';
+            };
+
+            // ---------- INICIAR ----------
+            reiniciarJogo();
+
+        })();
+    </script>
+</body>
+</html>
